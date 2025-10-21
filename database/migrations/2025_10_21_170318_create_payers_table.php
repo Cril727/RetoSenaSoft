@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('payers', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->string('full_name');
             $table->enum('type_document', ["CC","CE","Pasaporte"]);
             $table->string('document');

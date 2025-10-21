@@ -11,24 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::disableForeignKeyConstraints();
 
         Schema::create('flights', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->date('date');
             $table->time('hour');
             $table->integer('ability');
             $table->decimal('price');
-            $table->integer('destination_id');
-            $table->foreign('destination_id')->references('city')->on('origins');
-            $table->integer('origin_id');
-            $table->foreign('origin_id')->references('id')->on('destinations');
-            $table->integer('avion_id');
-            $table->foreign('avion_id')->references('id')->on('airplanes');
+            $table->foreignId('destination_id')->constrained('destinations')->onDelete('cascade');
+            $table->foreignId('origin_id')->constrained('origins')->onDelete('cascade');
+            $table->foreignId('airplane_id')->constrained('airplanes')->onDelete('cascade');
             $table->timestamps();
         });
-
-        Schema::enableForeignKeyConstraints();
     }
 
     /**
