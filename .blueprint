@@ -1,0 +1,31 @@
+created:
+    - database/factories/PassengerFactory.php
+    - database/factories/PayerFactory.php
+    - database/factories/AirplaneFactory.php
+    - database/factories/OriginFactory.php
+    - database/factories/DestinationFactory.php
+    - database/factories/FlightFactory.php
+    - database/factories/ReservationFactory.php
+    - database/migrations/2025_10_21_170317_create_passengers_table.php
+    - database/migrations/2025_10_21_170318_create_payers_table.php
+    - database/migrations/2025_10_21_170319_create_airplanes_table.php
+    - database/migrations/2025_10_21_170320_create_origins_table.php
+    - database/migrations/2025_10_21_170321_create_destinations_table.php
+    - database/migrations/2025_10_21_170322_create_flights_table.php
+    - database/migrations/2025_10_21_170323_create_reservations_table.php
+    - app/Models/Passenger.php
+    - app/Models/Payer.php
+    - app/Models/Airplane.php
+    - app/Models/Origin.php
+    - app/Models/Destination.php
+    - app/Models/Flight.php
+    - app/Models/Reservation.php
+models:
+    User: { name: string, email: string, email_verified_at: 'datetime nullable', password: string, remember_token: 'string nullable' }
+    Passenger: { id: increments, first_surname: string, second_surname: string, names: string, date_birth: date, gender: 'enum:"Man","Woman","Other"', type_document: 'enum:"CC","TI","CE","Pasaporte"', document: string, condicien_infante: boolean, phone: string, email: string }
+    Payer: { id: increments, full_name: string, type_document: 'enum:"CC","CE","Pasaporte"', document: string, email: string, phone: string }
+    Airplane: { id: increments, model: string, amount: integer }
+    Origin: { id: increments, city: string }
+    Destination: { id: increments, city: string }
+    Flight: { id: increments, date: date, hour: time, ability: integer, price: decimal, destination_id: 'integer foreign:origins.city', origin_id: 'integer foreign:destinations.id', avion_id: 'integer foreign:airplanes.id' }
+    Reservation: { id: increments, code: string, worth: decimal, number_of_positions: integer, flight_id: 'integer foreign:flights.id', passenger_id: 'integer foreign:passenger.id', payer_id: 'integer foreign:payer.id' }

@@ -1,0 +1,48 @@
+models:
+    Passenger:
+        id: increments
+        first_surname: string
+        second_surname: string
+        names: string
+        date_birth: date
+        gender: enum:"Man","Woman","Other"
+        type_document: enum:"CC","TI","CE","Pasaporte"
+        document: string
+        condicien_infante: boolean
+        phone: string
+        email: string
+    Payer:
+        id: increments
+        full_name: string
+        type_document: enum:"CC","CE","Pasaporte"
+        document: string
+        email: string
+        phone: string
+    Airplane:
+        id: increments
+        model: string
+        amount: integer
+    Origin:
+        id: increments
+        city: string
+    Destination:
+        id: increments
+        city: string
+    Flight:
+        id: increments
+        date: date
+        hour: time
+        ability: integer
+        price: decimal
+        destination_id: integer foreign:origins.city
+        origin_id: integer foreign:destinations.id
+        avion_id: integer foreign:airplanes.id
+    Reservation:
+        id: increments
+        code: string
+        worth: decimal
+        number_of_positions: integer
+        flight_id: integer foreign:flights.id
+        passenger_id: integer foreign:passenger.id
+        payer_id: integer foreign:payer.id
+
