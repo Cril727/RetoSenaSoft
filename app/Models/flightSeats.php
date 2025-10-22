@@ -10,11 +10,13 @@ use Illuminate\Database\Eloquent\Builder;
 class flightSeats extends Model
 {
     //
-    protected $table = [
-        "flight_id",
-        "seat_id",
-        "status",
-        "hold_expires_at",
+    protected $table = 'flight_seats';
+
+    protected $fillable = [
+        'flight_id',
+        'seat_id',
+        'status',
+        'hold_expires_at',
     ];
 
     protected $casts = [

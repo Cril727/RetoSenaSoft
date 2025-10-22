@@ -104,11 +104,11 @@ class FlightController extends Controller
     public function delete($id)
     {
         $flight = Flight::find($id);
-    
+
         if (!$flight) {
             return response()->json(['message' => 'No se ha encontrado el vuelo'], 401);
         }
-    
+
         try {
             $flight->delete();
             return response()->json(['message' => 'Eliminado correctamente'], 200);
@@ -117,5 +117,32 @@ class FlightController extends Controller
             return response()->json(['message' => 'No se pudo eliminar el vuelo ', $th], 500);
         }
     }
-    
+
+    // Obtener asientos disponibles para un vuelo
+    public function availableSeats($flightId)
+    {
+        try {
+            $flight = Flight::find($flightId);
+
+            if (!$flight) {
+                return response()->json(['message' => 'No se ha encontrado el vuelo'], 404);
+            }
+
+            // Obtener flightSeats con status 'available' y que no estén expirados
+            $availableSeats = $flight->flightSeats()
+                ->notExpired() // scope definido en flightSeats
+                ->where('status', 'available')
+                ->with('seat') // incluir información del asiento
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'available_seats' => $availableSeats
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::error('Error al obtener asientos disponibles', ['error' => $th->getMessage()]);
+            return response()->json(['message' => 'Error interno del servidor','error' => $th->getMessage()], 500);
+        }
+    }
+
 }
