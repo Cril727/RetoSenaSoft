@@ -18,8 +18,8 @@ class Reservation extends Model
     protected $fillable = [
         'code',
         'worth',
-        'number_of_positions',
         "status",
+        'number_of_positions',
         'flight_id',
         'passenger_id',
         'payer_id',

@@ -16,13 +16,11 @@ class Flight extends Model
      * @var array
      */
     protected $fillable = [
-        'date',
-        'hour',
-        'ability',
+        'departure_at',
         'price',
         'destination_id',
         'origin_id',
-        'avion_id',
+        'airplane_id',
     ];
 
     /**
@@ -52,4 +50,5 @@ class Flight extends Model
     {
         return $this->belongsTo(Airplane::class);
     }
+
 }

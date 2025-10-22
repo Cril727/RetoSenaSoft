@@ -15,14 +15,14 @@ return new class extends Migration
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
             $table->string('code');
-            $table->decimal('worth');
-            $table->string('status');
-            $table->integer('number_of_positions');
+            $table->decimal('worth',10,2);
+            $table->enum('status', ['pending','paid','canceled'])->default('pending');
+            $table->unsignedInteger('number_of_positions');
             $table->foreignId('flight_id')->constrained('flights')->onDelete('cascade');
             $table->foreignId('passenger_id')->constrained('passengers')->onDelete('cascade');
             $table->foreignId('payer_id')->constrained('payers')->onDelete('cascade');
             $table->timestamps();
-        });
+        }); 
     }
 
     /**

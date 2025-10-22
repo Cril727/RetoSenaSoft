@@ -11,21 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('seats', function (Blueprint $table) {
+        Schema::create('reservation_seat', function (Blueprint $table) {
             $table->id();
-            $table->string("code");
-            $table->string('class')->default('economy');
-            $table->foreignId("airplane_id")->constrained("airplanes")->onDelete("cascade");
-            $table->unique(['airplane_id', 'code']);
+            $table->foreignId('reservation_id')->constrained('reservations')->cascadeOnDelete();
+            $table->foreignId('flight_seat_id')->constrained('flight_seats')->cascadeOnDelete();
+            $table->unique(['reservation_id', 'flight_seat_id']);
             $table->timestamps();
         });
     }
 
-    /** 
+    /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('seats');
+        Schema::dropIfExists('reservation_seat');
     }
 };
