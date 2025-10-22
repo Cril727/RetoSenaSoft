@@ -24,31 +24,27 @@ class Flight extends Model
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'date' => 'date',
-            'price' => 'decimal',
-        ];
-    }
+    protected $casts = [
+        'departure_at' => 'datetime',
+        'price' => 'decimal:2',
+    ];
 
     public function origin(): BelongsTo
     {
-        return $this->belongsTo(Origin::class, 'destination_id', 'city');
+        return $this->belongsTo(Origin::class, 'origin_id');
     }
 
     public function destination(): BelongsTo
     {
-        return $this->belongsTo(Destination::class);
+        return $this->belongsTo(Destination::class, 'destination_id');
     }
 
     public function airplane(): BelongsTo
     {
-        return $this->belongsTo(Airplane::class);
+        return $this->belongsTo(Airplane::class, 'airplane_id');
     }
-
 }

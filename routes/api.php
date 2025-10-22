@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FlightController;
 use App\Http\Controllers\PassengerController;
 use App\Http\Controllers\PayerController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -38,8 +40,28 @@ Route::middleware('auth:api')->group(function () {
 
     //endpoints pay
     Route::get('/pays', [PayerController::class, 'index']);
-
+    Route::post('/pay', [PayerController::class, 'store']);
     Route::get('/payById/{id}', [PayerController::class, 'payById']);
     Route::put('/updatePay/{id}', [PayerController::class, 'update']);
+
+    //reservations endpoints
+    Route::get('/reservations', [ReservationController::class, 'index']);
+    Route::get('/reservationById/{id}', [ReservationController::class, 'reservationsById']);
+    Route::put('/updateReservation/{id}', [ReservationController::class, 'update']);
+    Route::delete('/deleteReservation/{id}', [ReservationController::class, 'delete']);
+
+    //flight endpoints
+    Route::get('/flights', [FlightController::class, 'index']);
+    Route::get('/flightById/{id}', [FlightController::class, 'flightById']);
+    Route::delete('/deleteFlight/{id}', [FlightController::class, 'delete']);
+    Route::put('/updateFlight/{id}', [FlightController::class, 'update']);
+
+
 });
-    Route::post('/pay', [PayerController::class, 'store']);
+    Route::post('/addFlight', [FlightController::class, 'store']);
+    Route::delete("/deleteFlight/{id}", [FlightController::class, "delete"]);
+
+    Route::post('/addReservation', [ReservationController::class, 'store']);
+    
+
+
