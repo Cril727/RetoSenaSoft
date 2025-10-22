@@ -47,7 +47,7 @@ class PassengerController extends Controller
     
             $validated = Validator::make($request->all(), [
                 "full_name" => "string",
-                "date_birth" => "date",
+                "date_birth" => "date", 
                 "gender" => "string",
                 "type_document" => "string",
                 "document" => "string",
