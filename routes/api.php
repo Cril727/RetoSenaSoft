@@ -46,10 +46,13 @@ Route::middleware('auth:api')->group(function () {
 
     //reservations endpoints
     Route::post('/addReservation', [ReservationController::class, 'store']);
+    Route::post('/addReservationWithPayment', [ReservationController::class, 'storeWithPayment']);
     Route::get('/reservations', [ReservationController::class, 'index']);
     Route::get('/reservationById/{id}', [ReservationController::class, 'reservationsById']);
     Route::put('/updateReservation/{id}', [ReservationController::class, 'update']);
     Route::delete('/deleteReservation/{id}', [ReservationController::class, 'delete']);
+    Route::get('/myReservations', [ReservationController::class, 'myReservations']);
+    Route::get('/passengersWithSeats/{flight_id}', [ReservationController::class, 'passengersWithSeats']);
 
     //flight endpoints
     Route::post('/addFlight', [FlightController::class, 'store']);
@@ -57,10 +60,15 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/flights', [FlightController::class, 'index']);
     Route::get('/flightById/{id}', [FlightController::class, 'flightById']);
     Route::put('/updateFlight/{id}', [FlightController::class, 'update']);
-    //vuelo por destino vuelo por origen
-    // mis reservaciones
-    //se paga y luego crear la reserva
     
+    //vuelo por destino vuelo por origen
+    //mis reservaciones
+    //se paga y luego crear la reserva
+    //datos del avion y asientos
+    //pasajero puesto y nombre
+    //pdf del tickete
+    //para que me traiga los pasajero puesto y nombre
+
 
     //seat endpoints
     Route::get('/seats', [SeatController::class, 'index']);
@@ -73,6 +81,8 @@ Route::middleware('auth:api')->group(function () {
     //Origins and Destinations
     Route::get('/origins', [OriginsAndDestinations::class, 'origins']);
     Route::get('/destinations', [OriginsAndDestinations::class, 'destinations']);
+    Route::get('/flightsByOrigin/{origin_id}', [OriginsAndDestinations::class, 'flightsByOrigin']);
+    Route::get('/flightsByDestination/{destination_id}', [OriginsAndDestinations::class, 'flightsByDestination']);
 
 
 });

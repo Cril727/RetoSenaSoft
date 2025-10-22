@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reservation;
+use App\Models\Payer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ReservationController extends Controller
 {
@@ -122,6 +124,45 @@ class ReservationController extends Controller
             Log::error('Error al eliminar', ['error' => $th->getMessage()]);
             return response()->json(['message' => 'No se pudo eliminar la reservacion', $th], 500);
         }
+    }
+
+
+    //Mis reservaciones
+    public function myReservations()
+    {
+        $user = JWTAuth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no autenticado'], 401);
+        }
+
+        $reservations = Reservation::with(['flight', 'passenger', 'payer'])
+            ->whereHas('payer', function ($query) use ($user) {
+                $query->where('email', $user->email);
+            })
+            ->get();
+
+        return response()->json(['success' => true, 'reservations' => $reservations], 200);
+    }
+
+    //Pasajeros con puesto y nombre para un vuelo
+    public function passengersWithSeats($flight_id)
+    {
+        $flightSeats = \App\Models\flightSeats::where('flight_id', $flight_id)
+            ->with(['reservations.passenger', 'seat'])
+            ->whereHas('reservations')
+            ->get();
+
+        $passengersWithSeats = $flightSeats->map(function ($flightSeat) {
+            return $flightSeat->reservations->map(function ($reservation) use ($flightSeat) {
+                return [
+                    'passenger_name' => $reservation->passenger->full_name,
+                    'seat_code' => $flightSeat->seat->code,
+                ];
+            });
+        })->flatten(1);
+
+        return response()->json(['success' => true, 'passengers_with_seats' => $passengersWithSeats], 200);
     }
 
 }
