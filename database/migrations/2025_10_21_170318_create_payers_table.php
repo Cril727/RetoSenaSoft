@@ -18,6 +18,12 @@ return new class extends Migration
             $table->string('document');
             $table->string('email');
             $table->string('phone');
+            $table->enum('payment_method', ["credit card","debit card","PSE"]);
+            $table->string("number_card");
+            $table->string("cvv");  
+            //yy-mm-dd
+            $table->date("expiration_date");
+            $table->enum('pse_method', ["Nequi","Daviplata","Bancolombia"])->nullable();
             $table->timestamps();
         });
     }

@@ -16,6 +16,7 @@ class Airplane extends Model
      */
     protected $fillable = [
         'model',
-        'amount',
+        "code",
+        'number_passengers',
     ];
 }

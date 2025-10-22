@@ -20,5 +20,10 @@ class Payer extends Model
         'document',
         'email',
         'phone',
+        'payment_method',
+        'number_card',
+        'cvv',
+        'expiration_date',
+        'pse_method',
     ];
 }

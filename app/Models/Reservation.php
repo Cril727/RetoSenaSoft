@@ -19,6 +19,7 @@ class Reservation extends Model
         'code',
         'worth',
         'number_of_positions',
+        "status",
         'flight_id',
         'passenger_id',
         'payer_id',

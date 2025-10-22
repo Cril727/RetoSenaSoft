@@ -43,12 +43,12 @@ class Flight extends Model
         return $this->belongsTo(Origin::class, 'destination_id', 'city');
     }
 
-    public function origin(): BelongsTo
+    public function destination(): BelongsTo
     {
         return $this->belongsTo(Destination::class);
     }
 
-    public function avion(): BelongsTo
+    public function airplane(): BelongsTo
     {
         return $this->belongsTo(Airplane::class);
     }

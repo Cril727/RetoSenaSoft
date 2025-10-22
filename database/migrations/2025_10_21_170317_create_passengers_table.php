@@ -13,18 +13,16 @@ return new class extends Migration
     {
         Schema::create('passengers', function (Blueprint $table) {
             $table->id();
-            $table->string('first_surname');
-            $table->string('second_surname');
-            $table->string('names');
-            $table->date('date_birth');
-            $table->enum('gender', ["Man","Woman","Other"]);
-            $table->enum('type_document', ["CC","TI","CE","Pasaporte"]);
-            $table->string('document');
-            $table->boolean('condicien_infante');
-            $table->string('phone');
+            $table->string('full_name');
+            $table->date('date_birth')->nullable();
+            $table->enum('gender', ["Man","Woman","Other"])->nullable();
+            $table->enum('type_document', ["CC","TI","CE","Pasaporte"])->nullable();
+            $table->string('document')->nullable();
+            $table->boolean('condicien_infante')->nullable();
+            $table->string('phone')->nullable();
             $table->string('email');
             $table->timestamps();
-        });
+        }); 
     }
 
     /**
