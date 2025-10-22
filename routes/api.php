@@ -23,7 +23,7 @@ Route::post('/addUser', [UserController::class, 'store']);
 Route::middleware('auth:api')->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get("me", [UserController::class, "me"]);
+    Route::get("/me", [UserController::class, "me"]);
 
     //endpoints users
     Route::get('/users', [UserController::class, 'index']);
@@ -60,12 +60,12 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/flights', [FlightController::class, 'index']);
     Route::get('/flightById/{id}', [FlightController::class, 'flightById']);
     Route::put('/updateFlight/{id}', [FlightController::class, 'update']);
+    Route::post('/searchFlights', [FlightController::class, 'searchFlights']);
+    Route::get('/flights/{flight_id}/available-seats', [FlightController::class, 'availableSeats']);
     
-    //vuelo por destino vuelo por origen
-    //mis reservaciones
     //se paga y luego crear la reserva
     //datos del avion y asientos
-    //pasajero puesto y nombre
+    //necestio que me tariags los datos de pasajero puesto y nombre
     //pdf del tickete
     //para que me traiga los pasajero puesto y nombre
 
@@ -84,7 +84,4 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/flightsByOrigin/{origin_id}', [OriginsAndDestinations::class, 'flightsByOrigin']);
     Route::get('/flightsByDestination/{destination_id}', [OriginsAndDestinations::class, 'flightsByDestination']);
 
-
 });
-
-Route::get('/flights/{flight_id}/available-seats', [FlightController::class, 'availableSeats']);

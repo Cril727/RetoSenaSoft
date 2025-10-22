@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Log;
 
 class Flight extends Model
 {
@@ -52,5 +53,49 @@ class Flight extends Model
     public function flightSeats(): HasMany
     {
         return $this->hasMany(flightSeats::class);
+    }
+
+    /**
+     * Boot method para asignar asientos automáticamente
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Cuando se crea un vuelo, asignar asientos automáticamente
+        static::created(function ($flight) {
+            $flight->assignSeats();
+        });
+    }
+
+    /**
+     * Asignar asientos del avión a este vuelo
+     */
+    public function assignSeats()
+    {
+        // Obtener todos los asientos del avión
+        $seats = Seat::where('airplane_id', $this->airplane_id)->get();
+
+        if ($seats->isEmpty()) {
+            Log::warning("El avión ID {$this->airplane_id} no tiene asientos configurados");
+            return 0;
+        }
+
+        $seatsAssigned = 0;
+
+        // Crear flight_seats para cada asiento
+        foreach ($seats as $seat) {
+            flightSeats::create([
+                'flight_id' => $this->id,
+                'seat_id' => $seat->id,
+                'status' => 'available',
+                'hold_expires_at' => null
+            ]);
+            $seatsAssigned++;
+        }
+
+        Log::info("Asientos asignados automáticamente al vuelo #{$this->id}: {$seatsAssigned} asientos");
+
+        return $seatsAssigned;
     }
 }
