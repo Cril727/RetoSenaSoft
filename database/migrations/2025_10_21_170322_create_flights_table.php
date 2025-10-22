@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-
         Schema::create('flights', function (Blueprint $table) {
             $table->id();
             $table->dateTime('departure_at');

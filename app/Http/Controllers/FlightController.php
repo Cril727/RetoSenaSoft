@@ -118,30 +118,86 @@ class FlightController extends Controller
         }
     }
 
-    // Obtener asientos disponibles para un vuelo
+    // Obtener todos los asientos de un vuelo (disponibles y ocupados)
     public function availableSeats($flightId)
     {
         try {
-            $flight = Flight::find($flightId);
+            $flight = Flight::with('airplane')->find($flightId);
 
             if (!$flight) {
                 return response()->json(['message' => 'No se ha encontrado el vuelo'], 404);
             }
 
-            // Obtener flightSeats con status 'available' y que no estén expirados
-            $availableSeats = $flight->flightSeats()
-                ->notExpired() // scope definido en flightSeats
-                ->where('status', 'available')
+            // Obtener TODOS los asientos del vuelo con su estado
+            $allSeats = $flight->flightSeats()
                 ->with('seat') // incluir información del asiento
-                ->get();
+                ->get()
+                ->map(function ($flightSeat) {
+                    return [
+                        'id' => $flightSeat->id,
+                        'flight_id' => $flightSeat->flight_id,
+                        'seat_id' => $flightSeat->seat_id,
+                        'status' => $flightSeat->status,
+                        'hold_expires_at' => $flightSeat->hold_expires_at,
+                        'seat' => [
+                            'id' => $flightSeat->seat->id,
+                            'code' => $flightSeat->seat->code,
+                            'class' => $flightSeat->seat->class,
+                            'airplane_id' => $flightSeat->seat->airplane_id
+                        ]
+                    ];
+                });
 
             return response()->json([
                 'success' => true,
-                'available_seats' => $availableSeats
+                'seats' => $allSeats,
+                'airplane' => $flight->airplane
             ], 200);
         } catch (\Throwable $th) {
-            Log::error('Error al obtener asientos disponibles', ['error' => $th->getMessage()]);
-            return response()->json(['message' => 'Error interno del servidor','error' => $th->getMessage()], 500);
+            Log::error('Error al obtener asientos', ['error' => $th->getMessage()]);
+            return response()->json([
+                'message' => 'Error interno del servidor',
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    // Buscar vuelos por origen y destino
+    public function searchFlights(Request $request)
+    {
+        try {
+            $validated = Validator::make($request->all(), [
+                'origin_id' => 'required|exists:origins,id',
+                'destination_id' => 'required|exists:destinations,id',
+            ]);
+
+            if ($validated->fails()) {
+                return response()->json(['errors' => $validated->errors()], 422);
+            }
+
+            $flights = Flight::where('origin_id', $request->origin_id)
+                ->where('destination_id', $request->destination_id)
+                ->with(['origin', 'destination', 'airplane'])
+                ->get();
+
+            if ($flights->isEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'No se encontraron vuelos para esta ruta',
+                    'flights' => []
+                ], 200);
+            }
+
+            return response()->json([
+                'success' => true,
+                'flights' => $flights
+            ], 200);
+        } catch (\Throwable $th) {
+            Log::error('Error al buscar vuelos', ['error' => $th->getMessage()]);
+            return response()->json([
+                'message' => 'Error interno del servidor',
+                'error' => $th->getMessage()
+            ], 500);
         }
     }
 
