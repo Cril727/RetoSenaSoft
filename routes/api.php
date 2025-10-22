@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FlightController;
+use App\Http\Controllers\OriginsAndDestinations;
 use App\Http\Controllers\PassengerController;
 use App\Http\Controllers\PayerController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\SeatController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,7 +18,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::post("login", [AuthController::class, "login"]);
 Route::post('/addUser', [UserController::class, 'store']);
-
 
 
 Route::middleware('auth:api')->group(function () {
@@ -37,7 +38,6 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/updatePassenger/{id}', [PassengerController::class, 'update']);
     Route::delete('/deletePassenger/{id}', [PassengerController::class, 'delete']);
 
-
     //endpoints pay
     Route::get('/pays', [PayerController::class, 'index']);
     Route::post('/pay', [PayerController::class, 'store']);
@@ -45,23 +45,36 @@ Route::middleware('auth:api')->group(function () {
     Route::put('/updatePay/{id}', [PayerController::class, 'update']);
 
     //reservations endpoints
+    Route::post('/addReservation', [ReservationController::class, 'store']);
     Route::get('/reservations', [ReservationController::class, 'index']);
     Route::get('/reservationById/{id}', [ReservationController::class, 'reservationsById']);
     Route::put('/updateReservation/{id}', [ReservationController::class, 'update']);
     Route::delete('/deleteReservation/{id}', [ReservationController::class, 'delete']);
 
     //flight endpoints
+    Route::post('/addFlight', [FlightController::class, 'store']);
+    Route::delete("/deleteFlight/{id}", [FlightController::class, "delete"]);
     Route::get('/flights', [FlightController::class, 'index']);
     Route::get('/flightById/{id}', [FlightController::class, 'flightById']);
-    Route::delete('/deleteFlight/{id}', [FlightController::class, 'delete']);
     Route::put('/updateFlight/{id}', [FlightController::class, 'update']);
+    //vuelo por destino vuelo por origen
+    // mis reservaciones
+    //se paga y luego crear la reserva
+    
+
+    //seat endpoints
+    Route::get('/seats', [SeatController::class, 'index']);
+    Route::post('/addSeat', [SeatController::class, 'store']);
+    Route::get('/seatById/{id}', [SeatController::class, 'seatById']);
+    Route::put('/updateSeat/{id}', [SeatController::class, 'update']);
+    Route::delete('/deleteSeat/{id}', [SeatController::class, 'delete']);
+
+
+    //Origins and Destinations
+    Route::get('/origins', [OriginsAndDestinations::class, 'origins']);
+    Route::get('/destinations', [OriginsAndDestinations::class, 'destinations']);
 
 
 });
-    Route::post('/addFlight', [FlightController::class, 'store']);
-    Route::delete("/deleteFlight/{id}", [FlightController::class, "delete"]);
 
-    Route::post('/addReservation', [ReservationController::class, 'store']);
-    
-
-
+Route::get('/flights/{flight_id}/available-seats', [FlightController::class, 'availableSeats']);
