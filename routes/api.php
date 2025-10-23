@@ -5,6 +5,7 @@ use App\Http\Controllers\FlightController;
 use App\Http\Controllers\OriginsAndDestinations;
 use App\Http\Controllers\PassengerController;
 use App\Http\Controllers\PayerController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\SeatController;
 use App\Http\Controllers\UserController;
@@ -84,4 +85,11 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/flightsByOrigin/{origin_id}', [OriginsAndDestinations::class, 'flightsByOrigin']);
     Route::get('/flightsByDestination/{destination_id}', [OriginsAndDestinations::class, 'flightsByDestination']);
 
+    //Payment endpoints (PayU Latam)
+    Route::post('/payment/create-order', [PaymentController::class, 'createPaymentOrder']);
+    Route::get('/payment/response', [PaymentController::class, 'paymentResponse']);
+
 });
+
+// Payment confirmation endpoint (webhook - no auth required)
+Route::post('/payment/confirmation', [PaymentController::class, 'paymentConfirmation']);
