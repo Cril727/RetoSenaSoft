@@ -19,6 +19,7 @@ class Flight extends Model
      */
     protected $fillable = [
         'departure_at',
+        'return_at',
         'price',
         'destination_id',
         'origin_id',
@@ -32,6 +33,7 @@ class Flight extends Model
      */
     protected $casts = [
         'departure_at' => 'datetime',
+        'return_at' => 'datetime',
         'price' => 'decimal:2',
     ];
 

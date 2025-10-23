@@ -40,6 +40,7 @@ class FlightController extends Controller
         try {
             $validated = Validator::make($request->all(), [
                 "departure_at" => 'required|date_format:Y-m-d H:i|after:now',
+                "return_at" => 'nullable|date_format:Y-m-d H:i|after:departure_at',
                 "price" => "required|numeric",
                 "destination_id" => "required|numeric",
                 "origin_id" => "required|numeric",
@@ -52,6 +53,7 @@ class FlightController extends Controller
     
             $flight = Flight::create([
                 "departure_at" => $request->departure_at,
+                "return_at" => $request->return_at,
                 "price" => $request->price,
                 "destination_id" => $request->destination_id,
                 "origin_id" => $request->origin_id,
@@ -77,6 +79,7 @@ class FlightController extends Controller
     
             $validated = Validator::make($request->all(), [
                 "departure_at" => 'date_format:Y-m-d H:i|after:now',
+                "return_at" => 'nullable|date_format:Y-m-d H:i|after:departure_at',
                 "price" => "numeric",
                 "destination_id" => "numeric",
                 "origin_id" => "numeric",
@@ -169,15 +172,30 @@ class FlightController extends Controller
             $validated = Validator::make($request->all(), [
                 'origin_id' => 'required|exists:origins,id',
                 'destination_id' => 'required|exists:destinations,id',
+                'departure_date' => 'nullable|date',
+                'return_date' => 'nullable|date|after_or_equal:departure_date',
             ]);
 
             if ($validated->fails()) {
                 return response()->json(['errors' => $validated->errors()], 422);
             }
 
-            $flights = Flight::where('origin_id', $request->origin_id)
-                ->where('destination_id', $request->destination_id)
-                ->with(['origin', 'destination', 'airplane'])
+            $query = Flight::where('origin_id', $request->origin_id)
+                ->where('destination_id', $request->destination_id);
+
+            // Filter by departure date if provided
+            if ($request->has('departure_date') && $request->departure_date) {
+                $departureDate = $request->departure_date;
+                $query->whereDate('departure_at', '=', $departureDate);
+            }
+
+            // Filter by return date if provided
+            if ($request->has('return_date') && $request->return_date) {
+                $returnDate = $request->return_date;
+                $query->whereDate('return_at', '=', $returnDate);
+            }
+
+            $flights = $query->with(['origin', 'destination', 'airplane'])
                 ->get();
 
             if ($flights->isEmpty()) {

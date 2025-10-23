@@ -65,7 +65,6 @@ class FlightSeatsSeeder extends Seeder
             $this->command->info("   ✓ Creados " . ($rows * count($columns)) . " asientos");
         }
 
-        // Crear orígenes y destinos si no existen
         $cities = ['BOGOTA', 'MEDELLIN', 'CARTAGENA', 'CALI', 'BARRANQUILLA'];
         
         foreach ($cities as $city) {
@@ -75,7 +74,6 @@ class FlightSeatsSeeder extends Seeder
 
         $this->command->info('🌍 Ciudades configuradas');
 
-        // Obtener TODOS los vuelos existentes
         $flights = Flight::with('airplane')->get();
 
         if ($flights->isEmpty()) {
@@ -118,7 +116,7 @@ class FlightSeatsSeeder extends Seeder
             $existingFlightSeats = flightSeats::where('flight_id', $flight->id)->count();
             
             if ($existingFlightSeats > 0) {
-                $this->command->info("   ✓ Ya tiene {$existingFlightSeats} asientos asignados");
+                $this->command->info(" Ya tiene {$existingFlightSeats} asientos asignados");
                 continue;
             }
 

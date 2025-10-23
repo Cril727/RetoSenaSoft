@@ -136,11 +136,25 @@ class ReservationController extends Controller
             return response()->json(['message' => 'Usuario no autenticado'], 401);
         }
 
-        $reservations = Reservation::with(['flight', 'passenger', 'payer'])
+        $reservations = Reservation::with([
+                'flight.origin',
+                'flight.destination',
+                'flight.airplane',
+                'passenger',
+                'payer',
+                'flightSeats.seat'
+            ])
             ->whereHas('payer', function ($query) use ($user) {
                 $query->where('email', $user->email);
             })
+            ->orderBy('created_at', 'desc')
             ->get();
+
+        Log::info('Reservas del usuario', [
+            'user_email' => $user->email,
+            'reservations_count' => $reservations->count(),
+            'reservations' => $reservations->toArray()
+        ]);
 
         return response()->json(['success' => true, 'reservations' => $reservations], 200);
     }

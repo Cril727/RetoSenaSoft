@@ -45,6 +45,7 @@ class PaymentController extends Controller
                 'passengers.*.full_name' => 'required|string',
                 'passengers.*.document_type' => 'required|string',
                 'passengers.*.document_number' => 'required|string',
+                'passengers.*.condicien_infante' => 'boolean',
             ]);
 
             if ($validator->fails()) {
@@ -92,7 +93,7 @@ class PaymentController extends Controller
             $payuData = [
                 'merchantId' => env('PAYU_MERCHANT_ID'),
                 'accountId' => env('PAYU_ACCOUNT_ID'),
-                'description' => "Vuelo {$flight->origin->city} - {$flight->destination->city}",
+                'description' => "Vuelo {$flight->origin->city} - {$flight->destination->city} - {$flight->departure_at}",
                 'referenceCode' => $referenceCode,
                 'amount' => $amount,
                 'tax' => 0,
@@ -272,7 +273,8 @@ class PaymentController extends Controller
                 [
                     'full_name' => $passengerData['full_name'],
                     'type_document' => $passengerData['document_type'],
-                    'email' => $data['payer']['email'] // Usar el email del pagador
+                    'email' => $data['payer']['email'], // Usar el email del pagador
+                    'condicien_infante' => $passengerData['condicien_infante'] ?? false
                 ]
             );
 
