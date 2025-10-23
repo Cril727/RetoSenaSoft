@@ -67,7 +67,7 @@ class ReservationController extends Controller
             return response()->json(["success" => true, "message" => "Reservacion creado correctamente", "reservation" => $reservation]);
         } catch (\Throwable $th) {
             Log::error('Error al crear', ['error' => $th->getMessage()]);
-            return response()->json(['message' => "Error interno del servidor", $th]);
+            return response()->json(['message' => "Error interno del servidor", 'error' => $th->getMessage()], 500);
         }
     }
 
@@ -104,7 +104,7 @@ class ReservationController extends Controller
             return response()->json(['success' => true, 'message' => 'Actualizado correctamente', 'reservation' => $reservation], 200);
         } catch (\Throwable $th) {
             Log::error('Error al actualizar', ['error' => $th->getMessage()]);
-            return response()->json(['message' => "Error interno del servidor", $th]);
+            return response()->json(['message' => "Error interno del servidor", 'error' => $th->getMessage()], 500);
         }
     }
 
@@ -122,7 +122,7 @@ class ReservationController extends Controller
             return response()->json(['message' => 'Eliminado correctamente'], 200);
         } catch (\Throwable $th) {
             Log::error('Error al eliminar', ['error' => $th->getMessage()]);
-            return response()->json(['message' => 'No se pudo eliminar la reservacion', $th], 500);
+            return response()->json(['message' => 'No se pudo eliminar la reservacion', 'error' => $th->getMessage()], 500);
         }
     }
 
@@ -136,11 +136,25 @@ class ReservationController extends Controller
             return response()->json(['message' => 'Usuario no autenticado'], 401);
         }
 
-        $reservations = Reservation::with(['flight', 'passenger', 'payer'])
+        $reservations = Reservation::with([
+                'flight.origin',
+                'flight.destination',
+                'flight.airplane',
+                'passenger',
+                'payer',
+                'flightSeats.seat'
+            ])
             ->whereHas('payer', function ($query) use ($user) {
                 $query->where('email', $user->email);
             })
+            ->orderBy('created_at', 'desc')
             ->get();
+
+        Log::info('Reservas del usuario', [
+            'user_email' => $user->email,
+            'reservations_count' => $reservations->count(),
+            'reservations' => $reservations->toArray()
+        ]);
 
         return response()->json(['success' => true, 'reservations' => $reservations], 200);
     }
