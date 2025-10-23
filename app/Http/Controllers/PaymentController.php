@@ -55,9 +55,10 @@ class PaymentController extends Controller
             // Obtener información del vuelo
             $flight = Flight::with(['origin', 'destination'])->findOrFail($request->flight_id);
             
+            
             // Verificar que los asientos estén disponibles
             $seatIds = collect($request->seats)->pluck('id');
-            $flightSeats = flightSeats::whereIn('id', $seatIds)
+            $flightSeats = flightSeats::with('seat')->whereIn('id', $seatIds)
                 ->where('flight_id', $request->flight_id)
                 ->where('status', 'available')
                 ->get();
@@ -89,11 +90,23 @@ class PaymentController extends Controller
             // Guardar datos de la orden en caché para recuperarlos después
             Cache::put("payment_order_{$referenceCode}", $orderData, now()->addHours(2));
 
-            // Preparar datos para PayU (sin extra1 para evitar límite de 255 caracteres)
+            // Construir descripción organizada con información del vuelo y pasajeros
+            $description = "Vuelo: {$flight->origin->city} → {$flight->destination->city} | ";
+            $description .= "Fecha: {$flight->departure_at} | ";
+            $description .= "Pasajeros: ";
+            
+            $passengerDetails = [];
+            foreach ($request->passengers as $index => $passenger) {
+                $seatCode = isset($flightSeats[$index]) ? $flightSeats[$index]->seat->code : 'N/A';
+                $passengerDetails[] = "{$passenger['full_name']} (Asiento: {$seatCode})";
+            }
+            $description .= implode(', ', $passengerDetails);
+
+            // Preparar datos para PayU
             $payuData = [
                 'merchantId' => env('PAYU_MERCHANT_ID'),
                 'accountId' => env('PAYU_ACCOUNT_ID'),
-                'description' => "Vuelo {$flight->origin->city} - {$flight->destination->city} - {$flight->departure_at}",
+                'description' => $description,
                 'referenceCode' => $referenceCode,
                 'amount' => $amount,
                 'tax' => 0,
