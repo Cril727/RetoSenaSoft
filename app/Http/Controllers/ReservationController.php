@@ -67,7 +67,7 @@ class ReservationController extends Controller
             return response()->json(["success" => true, "message" => "Reservacion creado correctamente", "reservation" => $reservation]);
         } catch (\Throwable $th) {
             Log::error('Error al crear', ['error' => $th->getMessage()]);
-            return response()->json(['message' => "Error interno del servidor", $th]);
+            return response()->json(['message' => "Error interno del servidor", 'error' => $th->getMessage()], 500);
         }
     }
 
@@ -104,7 +104,7 @@ class ReservationController extends Controller
             return response()->json(['success' => true, 'message' => 'Actualizado correctamente', 'reservation' => $reservation], 200);
         } catch (\Throwable $th) {
             Log::error('Error al actualizar', ['error' => $th->getMessage()]);
-            return response()->json(['message' => "Error interno del servidor", $th]);
+            return response()->json(['message' => "Error interno del servidor", 'error' => $th->getMessage()], 500);
         }
     }
 
@@ -122,7 +122,7 @@ class ReservationController extends Controller
             return response()->json(['message' => 'Eliminado correctamente'], 200);
         } catch (\Throwable $th) {
             Log::error('Error al eliminar', ['error' => $th->getMessage()]);
-            return response()->json(['message' => 'No se pudo eliminar la reservacion', $th], 500);
+            return response()->json(['message' => 'No se pudo eliminar la reservacion', 'error' => $th->getMessage()], 500);
         }
     }
 

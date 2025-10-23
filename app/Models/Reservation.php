@@ -33,7 +33,7 @@ class Reservation extends Model
     protected function casts(): array
     {
         return [
-            'worth' => 'decimal',
+            'worth' => 'decimal:2',
         ];
     }
 
